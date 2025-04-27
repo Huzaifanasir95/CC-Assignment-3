@@ -12,7 +12,7 @@ Outputs grammar details, parsing tables, and parsing results to output.txt.
 
 Repository Structure
 
-file.c: The main C source file containing the parser implementation.
+temp.c: The main C source file containing the parser implementation.
 grammar.txt: Sample grammar file defining the CFG for parsing declarations, assignments, and if-statements.
 input.txt: Sample input file with space-separated terminal strings to parse.
 output.txt: Generated output file containing grammar details, parsing tables, and parsing logs.
@@ -92,3 +92,5 @@ License
 This project is for educational purposes and is not licensed for commercial use. Feel free to use it as a reference for learning compiler construction concepts.
 Contact
 For questions or feedback, please open an issue on this repository or contact the contributors.
+
+Developed by [Your Name(s)] for CS-4031 Compiler Construction, Spring 2025.
