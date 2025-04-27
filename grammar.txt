@@ -1,0 +1,13 @@
+S->D|A|I
+D->ki;
+A->i=E;
+I->f(C)BL
+L->eB|~
+B->{A}
+C->EYE
+Y->>|<|=
+E->TP
+P->+TP|~
+T->FQ
+Q->*FQ|~
+F->(E)|i|n

@@ -1,0 +1,285 @@
+
+Initial Grammar:
+S -> D | A | I
+D -> ki;
+A -> i=E;
+I -> f(C)BL
+L -> eB | ~
+B -> {A}
+C -> EYE
+Y -> > | < | =
+E -> TP
+P -> +TP | ~
+T -> FQ
+Q -> *FQ | ~
+F -> (E) | i | n
+
+After Left Factoring:
+S -> D | A | I
+D -> ki;
+A -> i=E;
+I -> f(C)BL
+L -> eB | ~
+B -> {A}
+C -> EYE
+Y -> > | < | =
+E -> TP
+P -> +TP | ~
+T -> FQ
+Q -> *FQ | ~
+F -> (E) | i | n
+
+After Removing Left Recursion:
+S -> D | A | I
+D -> ki;
+A -> i=E;
+I -> f(C)BL
+L -> eB | ~
+B -> {A}
+C -> EYE
+Y -> > | < | =
+E -> TP
+P -> +TP | ~
+T -> FQ
+Q -> *FQ | ~
+F -> (E) | i | n
+
+FIRST & FOLLOW Sets:
+  S:
+    FIRST  = { k i f }
+    FOLLOW = { $ }
+
+  D:
+    FIRST  = { k }
+    FOLLOW = { $ }
+
+  A:
+    FIRST  = { i }
+    FOLLOW = { $ } }
+
+  I:
+    FIRST  = { f }
+    FOLLOW = { $ }
+
+  L:
+    FIRST  = { e ~ }
+    FOLLOW = { $ }
+
+  B:
+    FIRST  = { { }
+    FOLLOW = { e $ }
+
+  C:
+    FIRST  = { ( i n }
+    FOLLOW = { ) }
+
+  Y:
+    FIRST  = { > < = }
+    FOLLOW = { ( i n }
+
+  E:
+    FIRST  = { ( i n }
+    FOLLOW = { ; > < = ) }
+
+  P:
+    FIRST  = { + ~ }
+    FOLLOW = { ; > < = ) }
+
+  T:
+    FIRST  = { ( i n }
+    FOLLOW = { + ; > < = ) }
+
+  Q:
+    FIRST  = { * ~ }
+    FOLLOW = { + ; > < = ) }
+
+  F:
+    FIRST  = { ( i n }
+    FOLLOW = { * + ; > < = ) }
+
+
+LL(1) Parsing Table:
+          k     i     ;     =     f     (     )     e     {     }     >     <     +     *     n     $   
+  S  | S->D  S->A    -     -   S->I    -     -     -     -     -     -     -     -     -     -     -   
+  D  | D->ki;  -     -     -     -     -     -     -     -     -     -     -     -     -     -     -   
+  A  |   -   A->i=E;  -     -     -     -     -     -     -     -     -     -     -     -     -     -   
+  I  |   -     -     -     -   I->f(C)BL  -     -     -     -     -     -     -     -     -     -     -   
+  L  |   -     -     -     -     -     -     -   L->eB   -     -     -     -     -     -     -   L->~  
+  B  |   -     -     -     -     -     -     -     -   B->{A}  -     -     -     -     -     -     -   
+  C  |   -   C->EYE  -     -     -   C->EYE  -     -     -     -     -     -     -     -   C->EYE  -   
+  Y  |   -     -     -   Y->=    -     -     -     -     -     -   Y->>  Y-><    -     -     -     -   
+  E  |   -   E->TP   -     -     -   E->TP   -     -     -     -     -     -     -     -   E->TP   -   
+  P  |   -     -   P->~  P->~    -     -   P->~    -     -     -   P->~  P->~  P->+TP  -     -     -   
+  T  |   -   T->FQ   -     -     -   T->FQ   -     -     -     -     -     -     -     -   T->FQ   -   
+  Q  |   -     -   Q->~  Q->~    -     -   Q->~    -     -     -   Q->~  Q->~  Q->~  Q->*FQ  -     -   
+  F  |   -   F->i    -     -     -   F->(E)  -     -     -     -     -     -     -     -   F->n    -   
+
+Line 1: k i ;
+
+Step Stack                Input                     Action              
+1    $S                   k i ; $                   use S->D
+2    $D                   k i ; $                   use D->ki;
+3    $;ik                 k i ; $                   match 'k'
+4    $;i                  i ; $                     match 'i'
+5    $;                   ; $                       match ';'
+6    $                    $                         ACCEPT
+Line 1: Parsed successfully.
+
+Line 2: i = i + n ;
+
+Step Stack                Input                     Action              
+1    $S                   i = i + n ; $             use S->A
+2    $A                   i = i + n ; $             use A->i=E;
+3    $;E=i                i = i + n ; $             match 'i'
+4    $;E=                 = i + n ; $               match '='
+5    $;E                  i + n ; $                 use E->TP
+6    $;PT                 i + n ; $                 use T->FQ
+7    $;PQF                i + n ; $                 use F->i
+8    $;PQi                i + n ; $                 match 'i'
+9    $;PQ                 + n ; $                   use Q->~
+10   $;P                  + n ; $                   use P->+TP
+11   $;PT+                + n ; $                   match '+'
+12   $;PT                 n ; $                     use T->FQ
+13   $;PQF                n ; $                     use F->n
+14   $;PQn                n ; $                     match 'n'
+15   $;PQ                 ; $                       use Q->~
+16   $;P                  ; $                       use P->~
+17   $;                   ; $                       match ';'
+18   $                    $                         ACCEPT
+Line 2: Parsed successfully.
+
+Line 3: f ( i > n ) { i = i + n ; }
+
+Step Stack                Input                     Action              
+1    $S                   f ( i > n ) { i = i + n ; } $ use S->I
+2    $I                   f ( i > n ) { i = i + n ; } $ use I->f(C)BL
+3    $LB)C(f              f ( i > n ) { i = i + n ; } $ match 'f'
+4    $LB)C(               ( i > n ) { i = i + n ; } $ match '('
+5    $LB)C                i > n ) { i = i + n ; } $ use C->EYE
+6    $LB)EYE              i > n ) { i = i + n ; } $ use E->TP
+7    $LB)EYPT             i > n ) { i = i + n ; } $ use T->FQ
+8    $LB)EYPQF            i > n ) { i = i + n ; } $ use F->i
+9    $LB)EYPQi            i > n ) { i = i + n ; } $ match 'i'
+10   $LB)EYPQ             > n ) { i = i + n ; } $   use Q->~
+11   $LB)EYP              > n ) { i = i + n ; } $   use P->~
+12   $LB)EY               > n ) { i = i + n ; } $   use Y->>
+13   $LB)E>               > n ) { i = i + n ; } $   match '>'
+14   $LB)E                n ) { i = i + n ; } $     use E->TP
+15   $LB)PT               n ) { i = i + n ; } $     use T->FQ
+16   $LB)PQF              n ) { i = i + n ; } $     use F->n
+17   $LB)PQn              n ) { i = i + n ; } $     match 'n'
+18   $LB)PQ               ) { i = i + n ; } $       use Q->~
+19   $LB)P                ) { i = i + n ; } $       use P->~
+20   $LB)                 ) { i = i + n ; } $       match ')'
+21   $LB                  { i = i + n ; } $         use B->{A}
+22   $L}A{                { i = i + n ; } $         match '{'
+23   $L}A                 i = i + n ; } $           use A->i=E;
+24   $L};E=i              i = i + n ; } $           match 'i'
+25   $L};E=               = i + n ; } $             match '='
+26   $L};E                i + n ; } $               use E->TP
+27   $L};PT               i + n ; } $               use T->FQ
+28   $L};PQF              i + n ; } $               use F->i
+29   $L};PQi              i + n ; } $               match 'i'
+30   $L};PQ               + n ; } $                 use Q->~
+31   $L};P                + n ; } $                 use P->+TP
+32   $L};PT+              + n ; } $                 match '+'
+33   $L};PT               n ; } $                   use T->FQ
+34   $L};PQF              n ; } $                   use F->n
+35   $L};PQn              n ; } $                   match 'n'
+36   $L};PQ               ; } $                     use Q->~
+37   $L};P                ; } $                     use P->~
+38   $L};                 ; } $                     match ';'
+39   $L}                  } $                       match '}'
+40   $L                   $                         use L->~
+41   $                    $                         ACCEPT
+Line 3: Parsed successfully.
+
+Line 4: f ( i = n ) { i = n ; } e { i = i ; }
+
+Step Stack                Input                     Action              
+1    $S                   f ( i = n ) { i = n ; } e { i = i ; } $ use S->I
+2    $I                   f ( i = n ) { i = n ; } e { i = i ; } $ use I->f(C)BL
+3    $LB)C(f              f ( i = n ) { i = n ; } e { i = i ; } $ match 'f'
+4    $LB)C(               ( i = n ) { i = n ; } e { i = i ; } $ match '('
+5    $LB)C                i = n ) { i = n ; } e { i = i ; } $ use C->EYE
+6    $LB)EYE              i = n ) { i = n ; } e { i = i ; } $ use E->TP
+7    $LB)EYPT             i = n ) { i = n ; } e { i = i ; } $ use T->FQ
+8    $LB)EYPQF            i = n ) { i = n ; } e { i = i ; } $ use F->i
+9    $LB)EYPQi            i = n ) { i = n ; } e { i = i ; } $ match 'i'
+10   $LB)EYPQ             = n ) { i = n ; } e { i = i ; } $ use Q->~
+11   $LB)EYP              = n ) { i = n ; } e { i = i ; } $ use P->~
+12   $LB)EY               = n ) { i = n ; } e { i = i ; } $ use Y->=
+13   $LB)E=               = n ) { i = n ; } e { i = i ; } $ match '='
+14   $LB)E                n ) { i = n ; } e { i = i ; } $ use E->TP
+15   $LB)PT               n ) { i = n ; } e { i = i ; } $ use T->FQ
+16   $LB)PQF              n ) { i = n ; } e { i = i ; } $ use F->n
+17   $LB)PQn              n ) { i = n ; } e { i = i ; } $ match 'n'
+18   $LB)PQ               ) { i = n ; } e { i = i ; } $ use Q->~
+19   $LB)P                ) { i = n ; } e { i = i ; } $ use P->~
+20   $LB)                 ) { i = n ; } e { i = i ; } $ match ')'
+21   $LB                  { i = n ; } e { i = i ; } $ use B->{A}
+22   $L}A{                { i = n ; } e { i = i ; } $ match '{'
+23   $L}A                 i = n ; } e { i = i ; } $ use A->i=E;
+24   $L};E=i              i = n ; } e { i = i ; } $ match 'i'
+25   $L};E=               = n ; } e { i = i ; } $   match '='
+26   $L};E                n ; } e { i = i ; } $     use E->TP
+27   $L};PT               n ; } e { i = i ; } $     use T->FQ
+28   $L};PQF              n ; } e { i = i ; } $     use F->n
+29   $L};PQn              n ; } e { i = i ; } $     match 'n'
+30   $L};PQ               ; } e { i = i ; } $       use Q->~
+31   $L};P                ; } e { i = i ; } $       use P->~
+32   $L};                 ; } e { i = i ; } $       match ';'
+33   $L}                  } e { i = i ; } $         match '}'
+34   $L                   e { i = i ; } $           use L->eB
+35   $Be                  e { i = i ; } $           match 'e'
+36   $B                   { i = i ; } $             use B->{A}
+37   $}A{                 { i = i ; } $             match '{'
+38   $}A                  i = i ; } $               use A->i=E;
+39   $};E=i               i = i ; } $               match 'i'
+40   $};E=                = i ; } $                 match '='
+41   $};E                 i ; } $                   use E->TP
+42   $};PT                i ; } $                   use T->FQ
+43   $};PQF               i ; } $                   use F->i
+44   $};PQi               i ; } $                   match 'i'
+45   $};PQ                ; } $                     use Q->~
+46   $};P                 ; } $                     use P->~
+47   $};                  ; } $                     match ';'
+48   $}                   } $                       match '}'
+49   $                    $                         ACCEPT
+Line 4: Parsed successfully.
+
+Line 5: i = ( i + n ) * i ;
+
+Step Stack                Input                     Action              
+1    $S                   i = ( i + n ) * i ; $     use S->A
+2    $A                   i = ( i + n ) * i ; $     use A->i=E;
+3    $;E=i                i = ( i + n ) * i ; $     match 'i'
+4    $;E=                 = ( i + n ) * i ; $       match '='
+5    $;E                  ( i + n ) * i ; $         use E->TP
+6    $;PT                 ( i + n ) * i ; $         use T->FQ
+7    $;PQF                ( i + n ) * i ; $         use F->(E)
+8    $;PQ)E(              ( i + n ) * i ; $         match '('
+9    $;PQ)E               i + n ) * i ; $           use E->TP
+10   $;PQ)PT              i + n ) * i ; $           use T->FQ
+11   $;PQ)PQF             i + n ) * i ; $           use F->i
+12   $;PQ)PQi             i + n ) * i ; $           match 'i'
+13   $;PQ)PQ              + n ) * i ; $             use Q->~
+14   $;PQ)P               + n ) * i ; $             use P->+TP
+15   $;PQ)PT+             + n ) * i ; $             match '+'
+16   $;PQ)PT              n ) * i ; $               use T->FQ
+17   $;PQ)PQF             n ) * i ; $               use F->n
+18   $;PQ)PQn             n ) * i ; $               match 'n'
+19   $;PQ)PQ              ) * i ; $                 use Q->~
+20   $;PQ)P               ) * i ; $                 use P->~
+21   $;PQ)                ) * i ; $                 match ')'
+22   $;PQ                 * i ; $                   use Q->*FQ
+23   $;PQF*               * i ; $                   match '*'
+24   $;PQF                i ; $                     use F->i
+25   $;PQi                i ; $                     match 'i'
+26   $;PQ                 ; $                       use Q->~
+27   $;P                  ; $                       use P->~
+28   $;                   ; $                       match ';'
+29   $                    $                         ACCEPT
+Line 5: Parsed successfully.
+
+Parsing completed with 0 total errors.
