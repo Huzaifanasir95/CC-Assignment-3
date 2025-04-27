@@ -1,0 +1,5 @@
+k i ;
+i = i + n ;
+f ( i > n ) { i = i + n ; }
+f ( i = n ) { i = n ; } e { i = i ; }
+i = ( i + n ) * i ;
